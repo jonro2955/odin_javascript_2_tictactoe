@@ -1,28 +1,21 @@
 "use strict";
 
+/**Board module */
 const Board = (() => {
 
   let board = ["", "", "", "", "", "", "", "", ""];
   const grid = document.querySelectorAll(".cell");
 
   function setMark(index, mark){
+    if(board[index] === ""){
       board[index] = mark;
       grid[index].textContent = mark;
+    }
   };
 
   function getBoard(){
     return board;
   };
-
-  function getEmptyCells(){
-    let arr = [];
-    board.forEach((val, i)=>{
-      if(val === ""){
-        arr.push(i);
-      }
-    });
-    return arr;
-  }
 
   function highlightCell(index){
     grid[index].classList.add("winCell");
@@ -37,45 +30,28 @@ const Board = (() => {
   };
 
   function checkBoardFull(){
-    let returnBool = true;
-    board.forEach(val => {
-      if(val === ""){
-        returnBool = false;
-      }
-    });
-    return returnBool;
+    if(board.some(x => x === "")){
+      return false;
+    }else{
+      return true;
+    };
   }
 
-  return {grid, setMark, getBoard, getEmptyCells, highlightCell, clear, checkBoardFull};
+  return {grid, setMark, getBoard, highlightCell, clear, checkBoardFull};
 
 })();
 
 
+/**Settings module */
 const Settings = (() => {
 
-  let mode = "VS Human";   //defaults
-  let playerXSign = "X"; 
-  let playerOSign = "O"; 
-  let level = "EASY"; 
+  let mode = "Player VS Human";  
   let buttonsOn = true;
   const modeBtns = document.querySelectorAll(".modeBtn");
-  const levelBtns = document.querySelectorAll(".levelBtn");
   const signBtns = document.querySelectorAll(".signBtn");
 
   function getMode(){
     return mode;
-  };
-
-  function getPlayerXSign(){
-    return playerXSign;
-  };
-
-  function getPlayerOSign(){
-    return playerOSign;
-  }
-
-  function getlevel(){
-    return level;
   };
 
   function buttonsAreOn(){
@@ -85,9 +61,6 @@ const Settings = (() => {
   function activateBtns(){
     modeBtns.forEach(btn => {
       btn.addEventListener("click", activateMode);
-    });
-    levelBtns.forEach(btn => {
-      btn.addEventListener("click", activateLevel);
     });
     signBtns.forEach(btn => {
       btn.addEventListener("click", activateSign);
@@ -100,9 +73,6 @@ const Settings = (() => {
     modeBtns.forEach(btn => {
       btn.removeEventListener("click", activateMode);
     });
-    levelBtns.forEach(btn => {
-      btn.removeEventListener("click", activateLevel);
-    });
     signBtns.forEach(btn => {
       btn.removeEventListener("click", activateSign);
     });
@@ -112,12 +82,11 @@ const Settings = (() => {
 
   function activateMode(e){
     mode = e.target.textContent;
-    if(mode === "VS Human"){
+    if(mode === "Player VS Human"){
       document.getElementById("compMode").style.display = "none";
     }
-    if(mode === "VS Computer"){
+    if(mode === "Player VS Computer"){
       document.getElementById("compMode").style.display = "flex";
-      alert("This mode is under development");
     }
     e.target.style.backgroundColor = "aquamarine";
     modeBtns.forEach(btn => {
@@ -127,22 +96,17 @@ const Settings = (() => {
     });  
   }
 
-  function activateLevel(e){
-    level = e.target.textContent;
-    e.target.style.backgroundColor = "aquamarine";
-    levelBtns.forEach(btn => {
-      if(btn.textContent != level){
-        btn.style.backgroundColor = "white";
-      }; 
-    });  
-  }
-
   function activateSign(e){
+    //the only instance where a game move is made outside of the Game module
     if(e.target.textContent === "O"){
-      /*
-      Board.setMark(AI.nextMove, playerXSign);
-      GameLogic.switchCurrentPlayer();
-      */
+      Game.displayMessage("AI Computing move...");
+      setTimeout(function(){ 
+        let currentBoard = Board.getBoard();
+        let currentPlayerSign = Game.getCurrentPlayer().getSign();
+        let aiMove = Ai.minimax(currentBoard, currentPlayerSign).index;
+        Board.setMark(aiMove, currentPlayerSign);
+        Game.checkAndSwitch();  
+      }, 500);
     }
     e.target.style.backgroundColor = "aquamarine";
     signBtns.forEach(btn => {
@@ -154,11 +118,114 @@ const Settings = (() => {
 
   activateBtns();
 
-  return {getMode, getPlayerXSign, getPlayerOSign, getlevel, buttonsAreOn, activateBtns, deActivateBtns};
+  return {getMode, buttonsAreOn, activateBtns, deActivateBtns};
 
 })();
 
 
+/**Ai module */
+const Ai = (() => {
+
+  function getCompSign(){
+    return Game.getCurrentPlayer().getSign();
+  }
+
+  function getOpponentSign(){
+    return Game.getCurrentOpponent().getSign();
+  }
+
+  function getEmptyCellIndices(boardArray){
+    let myArray = [];
+    boardArray.forEach((val, i)=>{
+      if(val === ""){
+        myArray.push(i);
+      }
+    });
+    return myArray;
+  }
+
+  /**The minimax AI function, given a 9 cell tic-tac-toe array in any state,  
+   * and a player's sign, returns a "move" object containing: 
+   * (1) An array index number for the player's next best move, and 
+   * (2) A move score used to rank the move against other possible moves.
+   * It creates this by evaluating the endgame results of every possible combination 
+   * of moves through a recursive algorithm which contunously makes a hypothetical 
+   * move in an empty cell and then makes a recursive call to itself using the newly
+   * altered copy of the board and the opposing player's sign until either a 
+   * win/loss/tie occurs. The resulting endgame state is used to assign points to the 
+   * initial moves, and the move with the best score is returned. Return only the  
+   * index move number using the following sample call:
+   * Ai.minimax(newBoard, newSign).index 
+   * */
+  function minimax(newBoard, newSign){
+    //create an array containing all empty cell index numbers of the given newBoard
+    let emptyCellIndices = getEmptyCellIndices(newBoard);
+    //check for terminal states and return a corresponding score
+    if (Game.checkWin(newBoard, newSign)){
+      return {score:10};
+    }
+    else if (Game.checkWin(newBoard, getOpponentSign())){
+      return {score:-10};
+    }
+    else if (emptyCellIndices.length === 0){
+      return {score:0};
+    }
+    //create an empty array to hold the possible moves on the current board
+    let movesArray = [];
+    //loop through each empty cell indices
+    for (let i = 0; i < emptyCellIndices.length; i++){
+      //for each empty cell, create an object called move 
+      let move = {};
+      //store the index number of the current empty cell inside move{}
+      move.index = emptyCellIndices[i];
+      //then set the empty cell of newBoard to newSign
+      newBoard[move.index] = newSign;
+      /*using this newly modified newBoard, recursively call minimax with 
+      the opponent's sign and insert the resulting score into the move object as 
+      a property called score*/
+      if (newSign == getCompSign()){
+        let result = minimax(newBoard, getOpponentSign());
+        move.score = result.score;
+      }
+      else{
+        let result = minimax(newBoard, getCompSign());
+        move.score = result.score;
+      }
+      //revert the cell back to empty
+      newBoard[move.index] = "";
+      //push the current move object into movesArray
+      movesArray.push(move);
+    }
+    //loop over movesArray. If it is the computer's turn, save the move with the highest score
+    let bestMoveIndex;
+    if(newSign === getCompSign()){
+      let bestScore = -100;
+      for(let i = 0; i < movesArray.length; i++){
+        if(movesArray[i].score > bestScore){
+          bestScore = movesArray[i].score;
+          bestMoveIndex = i;
+        }
+      }
+    }else{
+      // else, save the move with the lowest score
+      let bestScore = 100; 
+      for(let i = 0; i < movesArray.length; i++){
+        if(movesArray[i].score < bestScore){
+          bestScore = movesArray[i].score;
+          bestMoveIndex = i;
+        }
+      }
+    }
+    //Finally, return the chosen move object from the movesArray array
+    return movesArray[bestMoveIndex];
+  }
+
+  return {minimax};
+
+})();
+
+
+/**Player module */
 const Player = (sign) => {
 
   this.sign = sign;
@@ -172,27 +239,36 @@ const Player = (sign) => {
 };
 
 
-const GameLogic = (() => {
+/**Game module */
+const Game = (() => {
 
-  let Player1 = Player(Settings.getPlayerXSign());
-  let Player2 = Player(Settings.getPlayerOSign());  
-  let currentPlayer = Player1;
-  let winningSign; 
+  let playerX = Player("X");
+  let playerO = Player("O");  
+  let currentPlayer = playerX;
+  let currentOpponent = playerO;
   let winningCells = []; 
-  const winSets = [ 
-    [0,1,2], 
-    [3,4,5],
-    [6,7,8],
-    [0,3,6],
-    [1,4,7],
-    [2,5,8],
-    [0,4,8],
-    [2,4,6]
-  ];
+
+  function getCurrentPlayer(){
+    return currentPlayer;
+  }
+
+  function getCurrentOpponent(){
+    return currentOpponent;
+  }
 
   function checkWin(board, playerSign){
+    const winSets = [ 
+      [0,1,2], 
+      [3,4,5],
+      [6,7,8],
+      [0,3,6],
+      [1,4,7],
+      [2,5,8],
+      [0,4,8],
+      [2,4,6]
+    ];  
     let playerCells = [];
-    let returnBool = false;
+    let result = false;
     board.forEach((val, index) => {
       if(val === playerSign) {
         playerCells.push(index);
@@ -200,12 +276,11 @@ const GameLogic = (() => {
     });
     winSets.forEach(set => {
       if(set.every(num => playerCells.includes(num))){
-        winningSign = playerSign;
         winningCells = set; 
-        returnBool = true;
+        result = true;
       }; 
     });
-    return returnBool;
+    return result;
   }
   
   function displayWin(playerSign, winningCells){
@@ -213,16 +288,14 @@ const GameLogic = (() => {
     winningCells.forEach(i => Board.highlightCell(i));
   }
 
-  function announceTie(){
-    displayMessage(`It's a Tie. Game Over.`);
-  }
-
   function switchCurrentPlayer(){
-    if(currentPlayer === Player1){
-      currentPlayer = Player2;
+    if(currentPlayer === playerX){
+      currentPlayer = playerO;
+      currentOpponent = playerX;
       displayMessage("O's Turn");
     } else {
-      currentPlayer = Player1;
+      currentPlayer = playerX;
+      currentOpponent = playerO;
       displayMessage("X's Turn");
     }
   }
@@ -230,43 +303,53 @@ const GameLogic = (() => {
   function displayMessage(str) {
     document.getElementById("message").textContent = str;
   };
-  
+
+  function disableGrid(){
+    grid.forEach(cell => {
+      cell.removeEventListener("click", playRound);
+    });
+  }
+
+  function checkAndSwitch(){
+    if(checkWin(Board.getBoard(), currentPlayer.getSign())){
+      displayWin(currentPlayer.getSign(), winningCells);
+      disableGrid();
+    }else if(Board.checkBoardFull()){
+      displayMessage(`It's a Tie. Game Over.`);
+      disableGrid();
+    }else{
+      switchCurrentPlayer();
+    }    
+  }
+
+  //the board (the "grid") click listener setup
   const grid = document.querySelectorAll(".cell");
   grid.forEach(cell => {
     cell.addEventListener("click", playRound);
   });
+
+  //the main game flow 
   function playRound(e){
     if(e.target.textContent != "") return;
     if(Settings.buttonsAreOn()) Settings.deActivateBtns();
     switch(Settings.getMode()){
-      case "VS Human":
+      case "Player VS Human":
         Board.setMark(e.target.dataset.key, currentPlayer.getSign());
-        if(checkWin(Board.getBoard(), currentPlayer.getSign())){
-          displayWin(currentPlayer.getSign(), winningCells);
-          grid.forEach(cell => {
-            cell.removeEventListener("click", playRound);
-          });
-        }else if(Board.checkBoardFull()){
-          announceTie();
-          grid.forEach(cell => {
-            cell.removeEventListener("click", playRound);
-          }); 
-        }else{
-          switchCurrentPlayer();
-        }    
+        checkAndSwitch();        
         return;
-      case "VS Computer": 
-        /*
+      case "Player VS Computer": 
         Board.setMark(e.target.dataset.key, currentPlayer.getSign());
-        evaluateAndSwitch();
-        //delay animation
-        Board.setMark(Ai.nextMove(), currentPlayer.getSign());
-        evaluateAndSwitch();
-        */
+        checkAndSwitch(); 
+        displayMessage("AI Computing move...");
+        setTimeout(function(){ 
+          let aiMove = Ai.minimax(Board.getBoard(), currentPlayer.getSign()).index;
+          Board.setMark(aiMove, currentPlayer.getSign());     
+          checkAndSwitch();  
+        }, 500);
     }
   }
 
-
+  //restart button
   const restartBtn = document.getElementById("restartBtn");
   restartBtn.addEventListener("click", () => {
     Board.clear();
@@ -275,53 +358,23 @@ const GameLogic = (() => {
       cell.addEventListener("click", playRound);
     });
     switch(Settings.getMode()){
-      case "VS Human":
-        currentPlayer = Player1;
+      case "Player VS Human":
+        currentPlayer = playerX;
         displayMessage(`${currentPlayer.getSign()}'s Turn`); 
         return;
-      case "VS Computer":
-        /*
-        incomplete
-        */
+      case "Player VS Computer":
+        if(currentPlayer === playerX){ 
+          displayMessage(`${currentPlayer.getSign()}'s Turn`);
+          document.getElementById("xBtn").style.backgroundColor = "aquamarine"
+          document.getElementById("oBtn").style.backgroundColor = "white"
+        }else{
+          switchCurrentPlayer();
+          document.getElementById("xBtn").style.backgroundColor = "aquamarine"
+          document.getElementById("oBtn").style.backgroundColor = "white"
+        }
     }
   });
 
-  return {switchCurrentPlayer};
-
-})();
-
-
-
-
-
-
-
-const Ai = (() => {
-
-
-  function minmax(board, player){
-    let emptySpots = Board.getEmptyCells();
-
-  }
-
-
-  function nextMove(){
-    let move;
-    let difficulty = Settings.getlevel();
-    let board = Board.getBoard();
-    //Use board and 4 different difficulty levels to change cellNumber
-    return move;
-  };
-
-
-
-
-
-
-
-
-
-
-  return {nextMove}
+  return {getCurrentPlayer, getCurrentOpponent, checkAndSwitch, switchCurrentPlayer, checkWin, displayMessage};
 
 })();
