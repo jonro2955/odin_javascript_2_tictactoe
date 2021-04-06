@@ -1,10 +1,11 @@
-# odin_javaScript_2_library (Under Development: The VS Computer mode is not fuctional yet.)
+# odin_javascript_2_tictactoe
 
-This is the 2nd project from The Odin Project's Full Stack JavaScript curriculum. 
+This is the second project from The Odin Project's Full Stack JavaScript curriculum. Live preview: https://jonro2955.github.io/odin_javascript_2_tictactoe/ 
 
-It is a simple Tic-Tac-Toe game that allows users to play against another human player by taking turns using the mouse, or agiant the computer. 
+It is a simple Tic-Tac-Toe game that allows the user to play against another human player by taking turns using the mouse, or against the computer, which utilizes the minimax algorithm to play a perfect game every time. The goal of this project was not simply to build a functional game app, but also to implement the module programming pattern in JavaScript. This program does not utilize any global variables or functions. 
 
 Project Instructions:
+
 1. Set up your project with a HTML, CSS and Javascript files and get the Git repo all set up.
 
 2. You’re going to store the gameboard as an array inside of a Gameboard object, so start there! Your players are also going to be stored in objects… and you’re probably going to want an object to control the flow of the game itself.
