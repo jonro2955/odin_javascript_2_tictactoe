@@ -1,5 +1,4 @@
 body{
-  /* border: black solid 1px; */
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -12,8 +11,11 @@ button{
 }
 
 p{
-  /* border: red solid 1px; */
   margin: 10px;
+}
+
+#heading{
+  margin-top: -10px;
 }
 
 #settingsDiv{
@@ -21,9 +23,7 @@ p{
   flex-direction: column;
   align-items: center;
   justify-content:flex-start;
-  margin-top: 25px;
-  /* border: red solid 1px; */
-  /* height: 250px; */
+  margin-top: -10px;
 }
 
 #modeDiv{
@@ -33,7 +33,6 @@ p{
   grid-template-rows: repeat(1, minmax(0, 1fr));
   width: 400px;
   height: 35px;
-  /* border: black solid 1px; */
 }
 
 #compMode{
@@ -51,7 +50,6 @@ p{
   grid-template-rows: repeat(1, minmax(0, 1fr));
   width: 400px;
   height: 35px;
-  /* border: black solid 1px; */
 }
 
 #signSelectDiv{
@@ -61,7 +59,6 @@ p{
   grid-template-rows: repeat(1, minmax(0, 1fr));
   width: 400px;
   height: 35px;
-  /* border: black solid 1px; */
 }
 
 #vsHumanBtn{
@@ -78,16 +75,11 @@ p{
 
 #message{
   font-size: 25px;
-  /* border: red solid 1px; */
   margin: 10px;
-  /* position: absolute; */
-  /* top: 320px; */
 }
 
 #gameBoard{
-  /* margin-top: 25px; */
   background-color:aquamarine;
-  /* border: red solid 5px; */
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -101,7 +93,6 @@ p{
   gap: 3px;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   grid-template-rows: repeat(3, minmax(0, 1fr));
-  /* margin: 50px; */
   background-color: black;
 }
 
@@ -117,13 +108,12 @@ p{
 }
 
 #restartBtnDiv{
-  /* border: black solid 1px; */
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   width: 235px;
-  margin-top: 25px;
+  margin-top: 10px;
 }
 
 #restartBtn{
@@ -133,6 +123,9 @@ p{
 }
 
 .winCell{
-  /* transform: scale(1.5,1.5); */
-  color: crimson;
+  color:coral;
+  animation: mymove 5s infinite;
 }
+
+@keyframes mymove {
+  50% {transform: rotate(180deg);}
