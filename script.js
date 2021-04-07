@@ -45,13 +45,19 @@ const Board = (() => {
 /**Settings module */
 const Settings = (() => {
 
-  let mode = "Player VS Human";  
+  let mode = "Player VS Human"; 
+  let level = "EASY" 
   let buttonsOn = true;
   const modeBtns = document.querySelectorAll(".modeBtn");
+  const levelBtns = document.querySelectorAll(".levelBtn");
   const signBtns = document.querySelectorAll(".signBtn");
 
   function getMode(){
     return mode;
+  };
+
+  function getLevel(){
+    return level;
   };
 
   function buttonsAreOn(){
@@ -61,6 +67,9 @@ const Settings = (() => {
   function activateBtns(){
     modeBtns.forEach(btn => {
       btn.addEventListener("click", activateMode);
+    });
+    levelBtns.forEach(btn => {
+      btn.addEventListener("click", activateLevel);
     });
     signBtns.forEach(btn => {
       btn.addEventListener("click", activateSign);
@@ -72,6 +81,9 @@ const Settings = (() => {
   function deActivateBtns(){
     modeBtns.forEach(btn => {
       btn.removeEventListener("click", activateMode);
+    });
+    levelBtns.forEach(btn => {
+      btn.removeEventListener("click", activateLevel);
     });
     signBtns.forEach(btn => {
       btn.removeEventListener("click", activateSign);
@@ -96,15 +108,23 @@ const Settings = (() => {
     });  
   }
 
+  function activateLevel(e){
+    level = e.target.textContent;
+    e.target.style.backgroundColor = "aquamarine";
+    levelBtns.forEach(btn => {
+      if(btn.textContent != level){
+        btn.style.backgroundColor = "white";
+      }; 
+    });  
+  }
+
   function activateSign(e){
-    //the only instance where a game move is made outside of the Game module
+    //the only place where a move execution is made outside of the Game module
     if(e.target.textContent === "O"){
       Game.displayMessage("AI Computing move...");
+      if(Settings.buttonsAreOn()) Settings.deActivateBtns();
       setTimeout(function(){ 
-        let currentBoard = Board.getBoard();
-        let currentPlayerSign = Game.getCurrentPlayer().getSign();
-        let aiMove = Ai.minimax(currentBoard, currentPlayerSign).index;
-        Board.setMark(aiMove, currentPlayerSign);
+        Ai.compMove();
         Game.checkAndSwitch();  
       }, 500);
     }
@@ -118,7 +138,7 @@ const Settings = (() => {
 
   activateBtns();
 
-  return {getMode, buttonsAreOn, activateBtns, deActivateBtns};
+  return {getMode, getLevel, buttonsAreOn, activateBtns, deActivateBtns};
 
 })();
 
@@ -134,6 +154,8 @@ const Ai = (() => {
     return Game.getCurrentOpponent().getSign();
   }
 
+  /*this cannot be declared in the Board module because it needs to be used 
+  recursively inside minimax() */ 
   function getEmptyCellIndices(boardArray){
     let myArray = [];
     boardArray.forEach((val, i)=>{
@@ -152,10 +174,11 @@ const Ai = (() => {
    * of moves through a recursive algorithm which contunously makes a hypothetical 
    * move in an empty cell and then makes a recursive call to itself using the newly
    * altered copy of the board and the opposing player's sign until either a 
-   * win/loss/tie occurs. The resulting endgame state is used to assign points to the 
-   * initial moves, and the move with the best score is returned. Return only the  
-   * index move number using the following sample call:
-   * Ai.minimax(newBoard, newSign).index 
+   * win/loss/tie occurs. The resulting endgame state is used to assign a score to the 
+   * initial move, and at the end, the move with the best score is returned. 
+   * https://www.freecodecamp.org/news/how-to-make-your-tic-tac-toe-game-unbeatable-by-using-the-minimax-algorithm-9d690bad4b37/
+   * Here is a sample call to return only the board index number of the best move:
+   * Ai.minimax(someBoard, someSign).index 
    * */
   function minimax(newBoard, newSign){
     //create an array containing all empty cell index numbers of the given newBoard
@@ -220,12 +243,50 @@ const Ai = (() => {
     return movesArray[bestMoveIndex];
   }
 
-  return {minimax};
+  /**compMove() uses minimax to make an automatic move for the computer player 
+   * depending on the current difficulty settings. For difficulty MED,
+   * minimax is used 30% of the time, and for the other 70% of the time, 
+   * minimax is used in reverse with the opposite sign to make a dumb move.
+   * For difficulty Hard, minimax is used 30% of the time and so on.
+   * */
+  function compMove(){
+    //generate random integer 0-100
+    let randomPercent = Math.floor(Math.random() * 101);
+    //set difficulty level thresholds
+    let percentThreshold; 
+    switch(Settings.getLevel()){
+      case "EASY":
+        percentThreshold = 0;
+        break;
+      case "MED":
+        percentThreshold = 30;
+        break;
+      case "HARD":
+        percentThreshold = 60;
+        break;
+      case "MAX":
+        percentThreshold = 100;
+    }
+    let aiMove;
+    if(randomPercent < percentThreshold){
+      //minimax for curent player in order to win
+      aiMove = minimax(Board.getBoard(), Game.getCurrentPlayer().getSign()).index
+      Board.setMark(aiMove, Game.getCurrentPlayer().getSign());
+      console.log(`minimax()`);
+    } else {
+      //minimax for curent opponent in order to lose
+      aiMove = minimax(Board.getBoard(), Game.getCurrentOpponent().getSign()).index
+      Board.setMark(aiMove, Game.getCurrentPlayer().getSign());
+      console.log(`let-win-move`);     
+    }
+  }
+
+  return {compMove};
 
 })();
 
 
-/**Player module */
+/**Player factory function */
 const Player = (sign) => {
 
   this.sign = sign;
@@ -247,6 +308,7 @@ const Game = (() => {
   let currentPlayer = playerX;
   let currentOpponent = playerO;
   let winningCells = []; 
+  let gameOver = false;
 
   function getCurrentPlayer(){
     return currentPlayer;
@@ -314,21 +376,25 @@ const Game = (() => {
     if(checkWin(Board.getBoard(), currentPlayer.getSign())){
       displayWin(currentPlayer.getSign(), winningCells);
       disableGrid();
+      gameOver = true;
     }else if(Board.checkBoardFull()){
       displayMessage(`It's a Tie. Game Over.`);
       disableGrid();
+      gameOver = true;
     }else{
       switchCurrentPlayer();
     }    
   }
 
-  //the board (the "grid") click listener setup
+  //the board ("grid") click listener setup
   const grid = document.querySelectorAll(".cell");
   grid.forEach(cell => {
     cell.addEventListener("click", playRound);
   });
 
-  //the main game flow 
+  /*********************************
+   * The main game flow algorithm *
+  *********************************/
   function playRound(e){
     if(e.target.textContent != "") return;
     if(Settings.buttonsAreOn()) Settings.deActivateBtns();
@@ -340,18 +406,20 @@ const Game = (() => {
       case "Player VS Computer": 
         Board.setMark(e.target.dataset.key, currentPlayer.getSign());
         checkAndSwitch(); 
-        displayMessage("AI Computing move...");
-        setTimeout(function(){ 
-          let aiMove = Ai.minimax(Board.getBoard(), currentPlayer.getSign()).index;
-          Board.setMark(aiMove, currentPlayer.getSign());     
-          checkAndSwitch();  
-        }, 500);
+        if(!gameOver){
+          displayMessage("AI Computing move...");
+          setTimeout(function(){ 
+            Ai.compMove();    
+            checkAndSwitch();  
+          }, 500);
+        }
     }
   }
 
   //restart button
   const restartBtn = document.getElementById("restartBtn");
   restartBtn.addEventListener("click", () => {
+    gameOver = false;
     Board.clear();
     Settings.activateBtns();
     grid.forEach(cell => {
