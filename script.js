@@ -1,6 +1,8 @@
 "use strict";
 
-/**Board module */
+/*******************************************************************************
+ * Board Module  
+ *******************************************************************************/
 const Board = (() => {
 
   let board = ["", "", "", "", "", "", "", "", ""];
@@ -37,16 +39,19 @@ const Board = (() => {
     };
   }
 
-  return {grid, setMark, getBoard, highlightCell, clear, checkBoardFull};
+  return {setMark, getBoard, highlightCell, clear, checkBoardFull};
 
 })();
 
 
-/**Settings module */
-const Settings = (() => {
+/*******************************************************************************
+ * Settings Module  
+ *******************************************************************************/
+ const Settings = (() => {
 
   let mode = "Player VS Human"; 
-  let level = "EASY" 
+  let level = "MED" 
+  let humanSign = "X";
   let buttonsOn = true;
   const modeBtns = document.querySelectorAll(".modeBtn");
   const levelBtns = document.querySelectorAll(".levelBtn");
@@ -59,6 +64,10 @@ const Settings = (() => {
   function getLevel(){
     return level;
   };
+
+  function getHumanSign(){
+    return humanSign;
+  }
 
   function buttonsAreOn(){
     return buttonsOn;
@@ -94,10 +103,13 @@ const Settings = (() => {
 
   function activateMode(e){
     mode = e.target.textContent;
+    Game.resetCurrentPlayerToX();
     if(mode === "Player VS Human"){
+      Game.displayMessage(`Player ${Game.getCurrentPlayer().getSign()}'s Turn`);
       document.getElementById("compMode").style.display = "none";
     }
     if(mode === "Player VS Computer"){
+      Game.displayMessage("Your Turn");
       document.getElementById("compMode").style.display = "flex";
     }
     e.target.style.backgroundColor = "aquamarine";
@@ -119,10 +131,12 @@ const Settings = (() => {
   }
 
   function activateSign(e){
+    humanSign = e.target.textContent;
     //the only place where a move execution is made outside of the Game module
     if(e.target.textContent === "O"){
-      Game.displayMessage("AI Computing move...");
       if(Settings.buttonsAreOn()) Settings.deActivateBtns();
+      Game.humanSelectedO();
+      Game.displayMessage("AI Computing move...");
       setTimeout(function(){ 
         Ai.compMove();
         Game.checkAndSwitch();  
@@ -136,15 +150,15 @@ const Settings = (() => {
     });  
   }
 
-  activateBtns();
-
-  return {getMode, getLevel, buttonsAreOn, activateBtns, deActivateBtns};
+  return {getMode, getLevel, getHumanSign, buttonsAreOn, activateBtns, deActivateBtns};
 
 })();
 
 
-/**Ai module */
-const Ai = (() => {
+/*******************************************************************************
+ * AI Module  
+ *******************************************************************************/
+ const Ai = (() => {
 
   function getCompSign(){
     return Game.getCurrentPlayer().getSign();
@@ -154,8 +168,8 @@ const Ai = (() => {
     return Game.getCurrentOpponent().getSign();
   }
 
-  /*this cannot be declared in the Board module because it needs to be used 
-  recursively inside minimax() */ 
+  /*this should not be declared in the Board module because it needs 
+  to be used recursively inside minimax() */ 
   function getEmptyCellIndices(boardArray){
     let myArray = [];
     boardArray.forEach((val, i)=>{
@@ -245,9 +259,8 @@ const Ai = (() => {
 
   /**compMove() uses minimax to make an automatic move for the computer player 
    * depending on the current difficulty settings. For difficulty MED,
-   * minimax is used 30% of the time, and for the other 70% of the time, 
+   * minimax is used 50% of the time, and for the other 50% of the time, 
    * minimax is used in reverse with the opposite sign to make a dumb move.
-   * For difficulty Hard, minimax is used 30% of the time and so on.
    * */
   function compMove(){
     //generate random integer 0-100
@@ -259,35 +272,33 @@ const Ai = (() => {
         percentThreshold = 0;
         break;
       case "MED":
-        percentThreshold = 30;
+        percentThreshold = 50;
         break;
       case "HARD":
-        percentThreshold = 60;
-        break;
-      case "MAX":
         percentThreshold = 100;
+        break;
     }
     let aiMove;
     if(randomPercent < percentThreshold){
       //minimax for curent player in order to win
       aiMove = minimax(Board.getBoard(), Game.getCurrentPlayer().getSign()).index
       Board.setMark(aiMove, Game.getCurrentPlayer().getSign());
-      console.log(`minimax()`);
     } else {
       //minimax for curent opponent in order to lose
       aiMove = minimax(Board.getBoard(), Game.getCurrentOpponent().getSign()).index
       Board.setMark(aiMove, Game.getCurrentPlayer().getSign());
-      console.log(`let-win-move`);     
     }
   }
 
-  return {compMove};
+  return {compMove, minimax};
 
 })();
 
 
-/**Player factory function */
-const Player = (sign) => {
+/*******************************************************************************
+ * Player Factory Function
+ *******************************************************************************/
+ const Player = (sign) => {
 
   this.sign = sign;
 
@@ -300,15 +311,73 @@ const Player = (sign) => {
 };
 
 
-/**Game module */
-const Game = (() => {
+/*******************************************************************************
+ * Game Module
+ *******************************************************************************/
+ const Game = (() => {
 
   let playerX = Player("X");
   let playerO = Player("O");  
   let currentPlayer = playerX;
   let currentOpponent = playerO;
+  let currentHumanPlayer = playerX;
+  let currentComputerPlayer = playerO;
   let winningCells = []; 
   let gameOver = false;
+  let quitDemo = false;
+  const replayBtnDiv = document.getElementById("replayBtnDiv");
+  const settingsDiv = document.getElementById("settingsDiv");
+  const message = document.getElementById("message");
+  const grid = document.querySelectorAll(".cell");
+  const demoLabel = document.getElementById("demoLabel");
+
+  const backToDemoDiv = document.getElementById("backToDemoDiv");
+  backToDemoDiv.addEventListener("click", ()=>{
+    location.reload();
+  });
+
+  const beginBtn = document.getElementById("beginBtn");
+  beginBtn.addEventListener("click", () => {
+    quitDemo = true;
+    resetCurrentPlayerToX();
+    beginBtn.style.display = "none";
+    backToDemoDiv.style.display = "flex";
+    replayBtnDiv.style.display = "flex";
+    settingsDiv.style.display = "flex";
+    message.style.display = "flex";
+    message.textContent = "Player X's Turn";
+    demoLabel.remove();
+    Board.clear();
+    Settings.activateBtns();
+    grid.forEach(cell => {
+      cell.addEventListener("click", playRound);
+      cell.style.opacity = 1;
+    });  
+  });
+
+  /*Demo Mode*/
+  function demoMode () {
+    setTimeout(function(){ 
+      if(quitDemo){
+        return;
+      }
+      Ai.compMove();        
+      checkAndSwitch(); 
+      if(gameOver){
+        return;
+      };
+      demoMode();
+    }, 500);
+    setTimeout(function(){
+      if(quitDemo){
+        return;
+      }  
+      location.reload();
+    }, 6000);
+  }
+
+  demoMode();
+  
 
   function getCurrentPlayer(){
     return currentPlayer;
@@ -316,6 +385,21 @@ const Game = (() => {
 
   function getCurrentOpponent(){
     return currentOpponent;
+  }
+
+  function resetCurrentPlayerToX(){
+    currentPlayer = playerX;
+    currentOpponent = playerO;
+  }
+
+  function humanSelectedO(){
+    currentHumanPlayer = playerO;
+    currentComputerPlayer = playerX;
+  }
+
+  function humanBackToX(){
+    currentHumanPlayer = playerX;
+    currentComputerPlayer = playerO;
   }
 
   function checkWin(board, playerSign){
@@ -346,19 +430,36 @@ const Game = (() => {
   }
   
   function displayWin(playerSign, winningCells){
-    displayMessage(`${playerSign} Wins! Game Over.`);
     winningCells.forEach(i => Board.highlightCell(i));
+    switch(Settings.getMode()){
+      case "Player VS Human":
+        displayMessage(`${playerSign} Wins! Game Over.`);
+        return;
+      case "Player VS Computer":
+        if(playerSign === currentHumanPlayer.getSign()){
+          displayMessage(`You Win! Game Over.`);  
+        }else if(playerSign === currentComputerPlayer.getSign()){
+          displayMessage(`Computer Wins! Game Over.`);
+        }
+    }
   }
 
   function switchCurrentPlayer(){
     if(currentPlayer === playerX){
       currentPlayer = playerO;
       currentOpponent = playerX;
-      displayMessage("O's Turn");
     } else {
       currentPlayer = playerX;
       currentOpponent = playerO;
-      displayMessage("X's Turn");
+    }
+    switch(Settings.getMode()){
+      case "Player VS Human":
+        displayMessage(`Player ${currentPlayer.getSign()}'s Turn.`);
+        return;
+      case "Player VS Computer":
+        if(currentPlayer.getSign() === currentHumanPlayer.getSign()){
+          displayMessage(`Your Turn`);  
+        }
     }
   }
 
@@ -379,6 +480,9 @@ const Game = (() => {
       gameOver = true;
     }else if(Board.checkBoardFull()){
       displayMessage(`It's a Tie. Game Over.`);
+      grid.forEach(cell => {
+        cell.style.opacity = 0.5;
+      });
       disableGrid();
       gameOver = true;
     }else{
@@ -386,15 +490,8 @@ const Game = (() => {
     }    
   }
 
-  //the board ("grid") click listener setup
-  const grid = document.querySelectorAll(".cell");
-  grid.forEach(cell => {
-    cell.addEventListener("click", playRound);
-  });
 
-  /*********************************
-   * The main game flow algorithm *
-  *********************************/
+  /*The main game flow algorithm*/
   function playRound(e){
     if(e.target.textContent != "") return;
     if(Settings.buttonsAreOn()) Settings.deActivateBtns();
@@ -416,33 +513,39 @@ const Game = (() => {
     }
   }
 
-  //restart button
-  const restartBtn = document.getElementById("restartBtn");
-  restartBtn.addEventListener("click", () => {
+  //reset button
+  const replayBtn = document.getElementById("replayBtn");
+  replayBtn.addEventListener("click", () => {
     gameOver = false;
     Board.clear();
     Settings.activateBtns();
     grid.forEach(cell => {
       cell.addEventListener("click", playRound);
+      cell.style.opacity = 1;
     });
     switch(Settings.getMode()){
       case "Player VS Human":
-        currentPlayer = playerX;
-        displayMessage(`${currentPlayer.getSign()}'s Turn`); 
+        resetCurrentPlayerToX();
+        displayMessage(`Player ${currentPlayer.getSign()}'s Turn`); 
         return;
       case "Player VS Computer":
-        if(currentPlayer === playerX){ 
-          displayMessage(`${currentPlayer.getSign()}'s Turn`);
-          document.getElementById("xBtn").style.backgroundColor = "aquamarine"
-          document.getElementById("oBtn").style.backgroundColor = "white"
-        }else{
-          switchCurrentPlayer();
-          document.getElementById("xBtn").style.backgroundColor = "aquamarine"
-          document.getElementById("oBtn").style.backgroundColor = "white"
-        }
+        humanBackToX();
+        displayMessage("Your Turn");
+        document.getElementById("xBtn").style.backgroundColor = "aquamarine"
+        document.getElementById("oBtn").style.backgroundColor = "white"
     }
   });
 
-  return {getCurrentPlayer, getCurrentOpponent, checkAndSwitch, switchCurrentPlayer, checkWin, displayMessage};
+  return {
+    getCurrentPlayer, 
+    getCurrentOpponent, 
+    checkAndSwitch, 
+    switchCurrentPlayer, 
+    checkWin, 
+    displayMessage, 
+    resetCurrentPlayerToX,
+    humanSelectedO,
+    humanBackToX
+  };
 
 })();

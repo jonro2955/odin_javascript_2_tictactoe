@@ -4,7 +4,7 @@ This is the second project from The Odin Project's Full Stack JavaScript curricu
 
 It is a simple Tic-Tac-Toe game that allows the user to play against another human player by taking turns using the mouse, or against the computer, which utilizes the minimax algorithm. 
 
-Since the minimax algorithm selects the best move every time, in order to make the computer "dumber" for the lower difficulty levels, each difficulty level associates a number threshold  variable of 0 for EASY, 30 for MED, 60 for HARD and 100 for MAX. And when it's time for the computer to make a move, we generate a random number between 0 and 100. The minimax is then used only if the random number is less than the threshold. If not, then a reverse minimax is used to make a move that allows the human player to win (provided that the human plays optimally).
+Since the minimax algorithm selects the best move every time, in order to make the computer "dumber" for the lower difficulty levels, each difficulty level associates a number threshold  variable of 0 for EASY, 30 for MED, 60 for HARD and 100 for MAX. And when it's time for the computer to make a move, we generate a random number between 0 and 100. The minimax is then used only if the random number is less than the threshold. If not, then a reverse minimax is used to make an incorrect move.
 
 The goal of this project was not simply to build a functional game app, but also to practice using the module programming pattern in JavaScript. This program does not utilize any global variables or functions.  
 

@@ -6,27 +6,25 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" type="text/css" href="style.css">
   <link href="https://fonts.googleapis.com/css2?family=Courgette&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&display=swap" rel="stylesheet">
 </head>
 <body>
-
+ 
   <h1 id="heading">TIC-TAC-TOE</h1>
+  <h1 id="demoLabel">DEMO MODE</h1>
 
   <div id="settingsDiv">
-
     <div id="modeDiv">
       <button class="modeBtn" id="vsHumanBtn">Player VS Human</button>
       <button class="modeBtn" id="vsCompBtn">Player VS Computer</button>
     </div>  
-
     <div id="compMode">
-      <p>Difficulty</p>
       <div id="levelSelectDiv"> 
         <button class="levelBtn" id="easyBtn">EASY</button>
         <button class="levelBtn" id="medBtn">MED</button>
         <button class="levelBtn" id="hardBtn">HARD</button>
-        <button class="levelBtn" id="maxBtn">MAX</button>
       </div>
-      <p>Choose Player's Sign (X moves first)</p>
       <div id="signSelectDiv">
         <button class="signBtn" id="xBtn">X</button>
         <button class="signBtn" id="oBtn">O</button>
@@ -34,7 +32,7 @@
     </div>
   </div>
   
-  <div id="message">X's Turn</div>
+  <div id="message">Welcome!</div>
 
   <div id="gameBoard">
     <div id="boardDiv">
@@ -50,9 +48,18 @@
     </div>
   </div>
 
-  <div id="restartBtnDiv">
-    <button id="restartBtn">Restart</button>
+  <div id="replayBtnDiv">
+    <button id="replayBtn">Reset/Replay</button>
   </div>
+
+  <div id="backToDemoDiv">
+    <button id="backToDemoBtn">Back To Demo Mode</button>
+  </div>
+
+  <div id="beginBtnDiv">
+    <button id="beginBtn">Begin Play!</button>
+  </div>
+
 
   <div id="credits">Built by&nbsp;<a href="https://github.com/jonro2955" target="_blank">Jonathan Ro</a>
     <br>For&nbsp;<a href="https://www.theodinproject.com/" target="_blank">The Odin Project</a>&nbsp;Curriculum
