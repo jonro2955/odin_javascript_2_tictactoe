@@ -102,6 +102,7 @@ const Board = (() => {
   }
 
   function activateMode(e){
+    Sounds.playClickSound();
     mode = e.target.textContent;
     Game.resetCurrentPlayerToX();
     if(mode === "Player VS Human"){
@@ -121,6 +122,7 @@ const Board = (() => {
   }
 
   function activateLevel(e){
+    Sounds.playClickSound();
     level = e.target.textContent;
     e.target.style.backgroundColor = "aquamarine";
     levelBtns.forEach(btn => {
@@ -131,6 +133,7 @@ const Board = (() => {
   }
 
   function activateSign(e){
+    Sounds.playClickSound();
     humanSign = e.target.textContent;
     //the only place where a move execution is made outside of the Game module
     if(e.target.textContent === "O"){
@@ -263,6 +266,7 @@ const Board = (() => {
    * minimax is used in reverse with the opposite sign to make a dumb move.
    * */
   function compMove(){
+    Sounds.playCompSound();
     //generate random integer 0-100
     let randomPercent = Math.floor(Math.random() * 101);
     //set difficulty level thresholds
@@ -334,10 +338,12 @@ const Board = (() => {
   const backToDemoDiv = document.getElementById("backToDemoDiv");
   backToDemoDiv.addEventListener("click", ()=>{
     location.reload();
+    Sounds.playClickSound();
   });
 
   const beginBtn = document.getElementById("beginBtn");
   beginBtn.addEventListener("click", () => {
+    Sounds.playClickSound();
     quitDemo = true;
     resetCurrentPlayerToX();
     beginBtn.style.display = "none";
@@ -377,7 +383,6 @@ const Board = (() => {
   }
 
   demoMode();
-  
 
   function getCurrentPlayer(){
     return currentPlayer;
@@ -434,12 +439,15 @@ const Board = (() => {
     switch(Settings.getMode()){
       case "Player VS Human":
         displayMessage(`${playerSign} Wins! Game Over.`);
+        Sounds.playWinSound();
         return;
       case "Player VS Computer":
         if(playerSign === currentHumanPlayer.getSign()){
           displayMessage(`You Win! Game Over.`);  
+          Sounds.playWinSound();
         }else if(playerSign === currentComputerPlayer.getSign()){
           displayMessage(`Computer Wins! Game Over.`);
+          Sounds.playLoseSound();
         }
     }
   }
@@ -485,6 +493,7 @@ const Board = (() => {
       });
       disableGrid();
       gameOver = true;
+      Sounds.playTieSound();
     }else{
       switchCurrentPlayer();
     }    
@@ -493,6 +502,7 @@ const Board = (() => {
 
   /*The main game flow algorithm*/
   function playRound(e){
+    Sounds.playMoveSound();
     if(e.target.textContent != "") return;
     if(Settings.buttonsAreOn()) Settings.deActivateBtns();
     switch(Settings.getMode()){
@@ -516,7 +526,10 @@ const Board = (() => {
   //reset button
   const replayBtn = document.getElementById("replayBtn");
   replayBtn.addEventListener("click", () => {
+    Sounds.playClickSound();
     gameOver = false;
+    resetCurrentPlayerToX();
+    humanBackToX();
     Board.clear();
     Settings.activateBtns();
     grid.forEach(cell => {
@@ -525,11 +538,9 @@ const Board = (() => {
     });
     switch(Settings.getMode()){
       case "Player VS Human":
-        resetCurrentPlayerToX();
         displayMessage(`Player ${currentPlayer.getSign()}'s Turn`); 
         return;
       case "Player VS Computer":
-        humanBackToX();
         displayMessage("Your Turn");
         document.getElementById("xBtn").style.backgroundColor = "aquamarine"
         document.getElementById("oBtn").style.backgroundColor = "white"
@@ -548,4 +559,46 @@ const Board = (() => {
     humanBackToX
   };
 
+})();
+
+
+const Sounds = (() => {
+
+  function playMoveSound(){
+    const moveSound = document.getElementById("move");
+    moveSound.currentTime = 0;
+    moveSound.play();
+  }
+
+  function playWinSound(){
+    const winSound = document.getElementById("win");
+    winSound.currentTime = 0;
+    winSound.play();
+  }
+
+  function playLoseSound(){
+    const loseSound = document.getElementById("lose");
+    loseSound.currentTime = 0;
+    loseSound.play();
+  }
+
+  function playTieSound(){
+    const tieSound = document.getElementById("tie");
+    tieSound.currentTime = 0;
+    tieSound.play();
+  }
+
+  function playCompSound(){
+    const compSound = document.getElementById("comp");
+    compSound.currentTime = 0;
+    compSound.play();
+  }
+
+  function playClickSound(){
+    const clickSound = document.getElementById("click");
+    clickSound.currentTime = 0;
+    clickSound.play();
+  }
+
+  return {playMoveSound, playWinSound, playLoseSound, playTieSound, playCompSound, playClickSound}
 })();
