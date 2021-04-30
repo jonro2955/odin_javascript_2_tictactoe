@@ -1,12 +1,12 @@
 # odin_javascript_2_tictactoe
 
-This is the second project from TOP's Full Stack JavaScript Curriculum. Live preview: https://jonro2955.github.io/odin_javascript_2_tictactoe/ 
+Preview: https://jonro2955.github.io/odin_javascript_2_tictactoe/ 
 
-It is a simple Tic-Tac-Toe game that allows the user to play against another human player by taking turns using the mouse, or against the computer, which utilizes the minimax algorithm. 
+The second project from TOP's Full Stack JavaScript Curriculum focuses on using the JavaScript module pattern to program an interactive game app. The modular programming pattern achieves increased security through function closure and non-pollution of the global namespace.   
 
-Since the minimax algorithm plays the perfect move every time, in order to make the computer "dumber" for lower difficulty levels, each difficulty level associates a percentage threshold number representing the chance of selecting a minimax move or a "reverse" minimax move that lets the human win instead. We then generate a random number between 0 and 100, and if that number is below the threshold, we use the normal minimax, and if it is above the threshold, we use the reverse minimax. The threshold is for EASY is 0, for MED it is 50 and for HARD it is 100. 
+The game itself is a simple Tic-Tac-Toe game that allows the user to play against another human player by taking turns using the mouse, or against the computer, which utilizes the minimax algorithm. 
 
-The goal of this project was not simply to build a functional game app, but also to practice using the module programming pattern in JavaScript. This program does not utilize any global variables or functions.  
+Since the minimax algorithm plays the perfect move every time, in order to make the computer "dumber" for lower difficulty levels, each difficulty level associates a percentage threshold number representing the chance of selecting a minimax move or a "reverse" minimax move that lets the human win instead. We then generate a random number between 0 and 100, and if that number is below the threshold, we use the normal minimax, and if it is above the threshold, we use the reverse minimax. The threshold is for EASY is 0, for MED it is 50 and for HARD it is 100.  
 
 Project Instructions:
 
