@@ -6,7 +6,9 @@ The second project from TOP's Full Stack JavaScript Curriculum focuses on using 
 
 The game itself is a simple Tic-Tac-Toe game that allows the user to play against another human player by taking turns using the mouse, or against the computer, which utilizes the minimax algorithm. 
 
-Since the minimax algorithm plays the perfect move every time, in order to make the computer "dumber" for lower difficulty levels, each difficulty level associates a percentage threshold number representing the chance of selecting a minimax move or a "reverse" minimax move that lets the human win instead. We then generate a random number between 0 and 100, and if that number is below the threshold, we use the normal minimax, and if it is above the threshold, we use the reverse minimax. The threshold is for EASY is 0, for MED it is 50 and for HARD it is 100.  
+A minimax algorithm was implemented to allow the computer to achieve artificial intelligence in player vs computer mode. 
+
+Since the minimax algorithm plays the perfect move every time, in order to create multiple difficulty levels, each difficulty level associates a threshold number between 0 and 100. The threshold is for EASY is 0, for MED it is 50 and for HARD it is 100. We then generate a random number between 0 and 100, and if that number is below the threshold for the currently selected difficulty level, the computer uses the normal minimax move, but if it is above the threshold, the computer uses a "reversed" minimax move that lets the human win instead.  
 
 Project Instructions:
 
