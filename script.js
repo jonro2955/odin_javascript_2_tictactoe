@@ -262,7 +262,7 @@ const Board = (() => {
 
   /**compMove() uses minimax to make an automatic move for the computer player 
    * depending on the current difficulty settings. For difficulty MED,
-   * minimax is used 50% of the time, and for the other 50% of the time, 
+   * minimax is used percentThreshold % of the time, and for the remaining % of the time, 
    * minimax is used in reverse with the opposite sign to make a dumb move.
    * */
   function compMove(){
@@ -276,7 +276,7 @@ const Board = (() => {
         percentThreshold = 0;
         break;
       case "MED":
-        percentThreshold = 50;
+        percentThreshold = 75;
         break;
       case "HARD":
         percentThreshold = 100;
