@@ -276,7 +276,7 @@ const Board = (() => {
         percentThreshold = 0;
         break;
       case "MED":
-        percentThreshold = 75;
+        percentThreshold = 80;
         break;
       case "HARD":
         percentThreshold = 100;

@@ -1,12 +1,14 @@
 # odin_javascript_2_tictactoe
 
-This is the second project from The Odin Project's Full Stack JavaScript curriculum. Live preview: https://jonro2955.github.io/odin_javascript_2_tictactoe/ 
+Preview: https://jonro2955.github.io/odin_javascript_2_tictactoe/ 
 
-It is a simple Tic-Tac-Toe game that allows the user to play against another human player by taking turns using the mouse, or against the computer, which utilizes the minimax algorithm. 
+The second project from TOP's Full Stack JavaScript Curriculum focuses on using the JavaScript module pattern to program an interactive game app. The modular programming pattern achieves increased security through function closure and non-pollution of the global namespace.   
 
-Since the minimax algorithm selects the best move every time, in order to make the computer "dumber" for the lower difficulty levels, each difficulty level associates a number threshold  variable of 0 for EASY, 30 for MED, 60 for HARD and 100 for MAX. And when it's time for the computer to make a move, we generate a random number between 0 and 100. The minimax is then used only if the random number is less than the threshold. If not, then a reverse minimax is used to make an incorrect move.
+The game itself is a simple Tic-Tac-Toe game that allows the user to play against another human player by taking turns using the mouse, or against the computer, which utilizes the minimax algorithm. 
 
-The goal of this project was not simply to build a functional game app, but also to practice using the module programming pattern in JavaScript. This program does not utilize any global variables or functions.  
+A minimax algorithm was implemented to allow the computer to achieve artificial intelligence in player vs computer mode. 
+
+Since the minimax algorithm plays the perfect move every time, in order to create multiple difficulty levels, each difficulty level associates a threshold number between 0 and 100. The threshold is for EASY is 0, for MED it is 50 and for HARD it is 100. We then generate a random number between 0 and 100, and if that number is below the threshold for the currently selected difficulty level, the computer uses the normal minimax move, but if it is above the threshold, the computer uses a "reversed" minimax move that lets the human win instead.  
 
 Project Instructions:
 
