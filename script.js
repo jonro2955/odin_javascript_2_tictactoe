@@ -48,8 +48,8 @@ const Board = (() => {
  * Settings Module  
  *******************************************************************************/
  const Settings = (() => {
-
-  let mode = "Player VS Human"; 
+  // Default starting mode is set to:
+  let mode = 'Player VS Computer'; 
   let level = "MED" 
   let humanSign = "X";
   let buttonsOn = true;
@@ -273,7 +273,7 @@ const Board = (() => {
     let percentThreshold; 
     switch(Settings.getLevel()){
       case "EASY":
-        percentThreshold = 0;
+        percentThreshold = 25;
         break;
       case "MED":
         percentThreshold = 80;
@@ -341,20 +341,23 @@ const Board = (() => {
     Sounds.playClickSound();
   });
 
+  /** CHANGES */
   const beginBtn = document.getElementById("beginBtn");
   beginBtn.addEventListener("click", () => {
     Sounds.playClickSound();
-    quitDemo = true;
+    demoLabel.remove();
+    Board.clear();
+    Settings.activateBtns();
     resetCurrentPlayerToX();
+    quitDemo = true;
     beginBtn.style.display = "none";
     backToDemoDiv.style.display = "flex";
     replayBtnDiv.style.display = "flex";
     settingsDiv.style.display = "flex";
     message.style.display = "flex";
-    message.textContent = "Player X's Turn";
-    demoLabel.remove();
-    Board.clear();
-    Settings.activateBtns();
+    // activateMode("Player VS Computer");
+    
+    message.textContent = "Your Turn";
     grid.forEach(cell => {
       cell.addEventListener("click", playRound);
       cell.style.opacity = 1;
