@@ -273,7 +273,7 @@ const Board = (() => {
     let percentThreshold; 
     switch(Settings.getLevel()){
       case "EASY":
-        percentThreshold = 25;
+        percentThreshold = 50;
         break;
       case "MED":
         percentThreshold = 80;
@@ -446,10 +446,10 @@ const Board = (() => {
         return;
       case "Player VS Computer":
         if(playerSign === currentHumanPlayer.getSign()){
-          displayMessage(`You Win! Game Over.`);  
+          displayMessage(`You win! Game over`);  
           Sounds.playWinSound();
         }else if(playerSign === currentComputerPlayer.getSign()){
-          displayMessage(`Computer Wins! Game Over.`);
+          displayMessage(`You lose! Game over`);
           Sounds.playLoseSound();
         }
     }
