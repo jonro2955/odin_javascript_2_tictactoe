@@ -13,7 +13,7 @@ Focus Areas:
 - JavaScript module patterns and IIFE's (Immediately Invoked Function Expressions)
 - Factory functions
 - Function closures and namespacing.
-- Rendering data structures such as arrays into DOM interfaces
+- Rendering data structures into DOM interfaces
 - DOM events
 - Game logic
 - Algorithmic analysis and implementation
