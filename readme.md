@@ -12,7 +12,7 @@ The various difficulty levels are achieved by giving each level a percentage thr
 Focus Areas:
 - JavaScript module patterns and IIFE's (Immediately Invoked Function Expressions)
 - Factory functions
-- Function closures and non-pollution of global namespace.
+- Function closures and namespacing.
 - Rendering data structures such as arrays into DOM interfaces
 - DOM events
 - Game logic
