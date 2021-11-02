@@ -1,37 +1,37 @@
-body{
+body {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  font-family: 'Dela Gothic One', cursive;  
+  font-family: 'Dela Gothic One', cursive;
 
   /* border: black 1px solid; */
 }
 
-button{
+button {
   outline: none;
   border-radius: 10px;
-  font-family: 'Dela Gothic One', cursive;  
+  font-family: 'Dela Gothic One', cursive;
   border-width: 3px;
 }
 
-p{
+p {
   margin: 10px;
 }
 
-#heading{
+#heading {
   margin: -5px 0 5px 0;
   color: darkblue;
   /* border: black 1px solid; */
 }
 
-#demoLabel{
+#demoLabel {
   margin: -15px 0 10px 0;
   color: darkblue;
   /* border: black 1px solid; */
 }
 
-#settingsDiv{
+#settingsDiv {
   display: none;
   flex-direction: column;
   align-items: center;
@@ -41,7 +41,7 @@ p{
   /* border: black 1px solid; */
 }
 
-#modeDiv{
+#modeDiv {
   display: grid;
   gap: 3px;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -49,20 +49,18 @@ p{
   width: 400px;
   height: 35px;
   /* border: black 1px solid; */
-
 }
 
-#compMode{
+#compMode {
   /* display: none; */
   flex-direction: column;
   align-items: center;
-  justify-content:  center;
+  justify-content: center;
   gap: 5px;
   /* border: black 1px solid; */
-
 }
 
-#levelSelectDiv{
+#levelSelectDiv {
   display: grid;
   gap: 3px;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -71,10 +69,9 @@ p{
   height: 35px;
   margin-bottom: 5px;
   /* border: black 1px solid; */
-
 }
 
-#signSelectDiv{
+#signSelectDiv {
   display: grid;
   gap: 3px;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -82,32 +79,30 @@ p{
   width: 400px;
   height: 35px;
   /* border: black 1px solid; */
-
 }
 
-#vsCompBtn{
+#vsCompBtn {
   background-color: aquamarine;
 }
 
-#medBtn{
+#medBtn {
   background-color: aquamarine;
 }
 
-#xBtn{
+#xBtn {
   background-color: aquamarine;
 }
 
-#message{
-  display:none;
+#message {
+  display: none;
   font-size: 25px;
   color: darkblue;
 
   /* margin: 10px; */
   /* border: black 1px solid; */
-
 }
 
-#gameBoard{
+#gameBoard {
   /* background-color:aquamarine; */
   background-color: black;
   display: flex;
@@ -117,10 +112,9 @@ p{
   width: 380px;
   height: 380px;
   /* border: black 1px solid; */
-
 }
 
-#boardDiv{
+#boardDiv {
   display: grid;
   gap: 3px;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -128,7 +122,7 @@ p{
   background-color: black;
 }
 
-.cell{
+.cell {
   background-color: aquamarine;
   width: 120px;
   height: 120px;
@@ -138,54 +132,54 @@ p{
   justify-content: center;
   font-size: 75px;
   border: black 1px solid;
-
 }
 
-#replayBtnDiv{
-  display:none;
-  margin-top: 10px; 
+#replayBtnDiv {
+  display: none;
+  margin-top: 10px;
 }
 
-#backToDemoDiv{
-  display:none;
-  margin-top: 5px; 
+#backToDemoDiv {
+  display: none;
+  margin-top: 5px;
 }
 
-#backToDemoBtn{
+#backToDemoBtn {
   width: 235px;
   height: 35px;
 }
 
-#beginBtnDiv{
-  margin-top: 5px; 
+#beginBtnDiv {
+  margin-top: 5px;
 }
 
-#replayBtn{
-  margin-top: -5px; 
+#replayBtn {
+  margin-top: -5px;
   width: 235px;
   height: 35px;
 }
 
-#beginBtn{
+#beginBtn {
   width: 235px;
   height: 70px;
   font-size: 25px;
   border-radius: 10px;
-
 }
 
-.winCell{
-  color:coral;
+.winCell {
+  color: coral;
   text-shadow: 2px 2px black;
   background-color: palegreen;
   animation: mymove 5s infinite;
 }
 
 @keyframes mymove {
-  50% {transform: rotate(180deg);}
+  50% {
+    transform: rotate(180deg);
+  }
 }
 
-#credits{
+#credits {
   margin: 30px 0 30px 0;
   text-align: center;
   font-family: 'Courgette', cursive;
