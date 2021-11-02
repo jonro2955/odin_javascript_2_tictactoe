@@ -7,7 +7,7 @@ Difficulty levels are achieved by giving each level a percentage threshold numbe
 
 <hr/>
 
-[Live Demo](https://jonro2955.github.io/odin_javascript_7_battleship/)
+[Live Demo](https://jonro2955.github.io/odin_javascript_2_tictactoe/)
 
 ### Focus  
 - JavaScript module patterns and IIFE's 
