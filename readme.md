@@ -2,7 +2,7 @@
 
 ## [Live Site](https://jonro2955.github.io/odin_javascript_2_tictactoe/)
 
-This is an implementation of a web based graphical tic tac toe game with AI. The app is built using HTML, CSS and JavaScript. The user can play against the computer or with another human player by taking turns using the mouse. The computer player with artificial intelligence was implemented using the minimax algorithm in JavaScript. The user can select from 3 difficulty levels when playing against the computer. 
+This is a web based tic tac toe game with AI. The app is built using HTML, CSS and JavaScript. The user can play against the computer or with another human player by taking turns using the mouse. The computer player with artificial intelligence was implemented using the minimax algorithm in JavaScript. The user can select from 3 difficulty levels when playing against the computer. 
 
 Difficulty levels are achieved by assigning each level a percentage threshold number between 0 and 100. 0 is assigned to Easy, 50 is assigned to Medium and 100 is assigned to Hard. Each time the computer plays, it generagtes a random number between 0 and 100. If that number is below the difficulty threshold, the computer uses the minimax algorithm to make the best move possible. If it is above the threshold, the computer uses the algorithm in reverse to make a sub-optimal move.  
 
