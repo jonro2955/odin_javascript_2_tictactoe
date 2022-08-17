@@ -1,6 +1,6 @@
 # Tic Tac Toe
 
-## [Live Site](https://jonro2955.github.io/odin_javascript_2_tictactoe/)
+# [Live Site](https://jonro2955.github.io/odin_javascript_2_tictactoe/)
 
 This is a web based tic tac toe game with AI. The app is built using HTML, CSS and JavaScript. The user can play against the computer or with another human player by taking turns using the mouse. The computer player with artificial intelligence was implemented using the minimax algorithm in JavaScript. The user can select from 3 difficulty levels when playing against the computer. 
 
