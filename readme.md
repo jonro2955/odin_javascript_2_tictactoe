@@ -1,4 +1,4 @@
-# Tic Tac Toe
+# AI Tic Tac Toe
 
 # [Live Site](https://jonro2955.github.io/odin_javascript_2_tictactoe/)
 
